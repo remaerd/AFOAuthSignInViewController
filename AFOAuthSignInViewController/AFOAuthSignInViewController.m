@@ -12,7 +12,6 @@
 #import "AFOAuthSignInViewController.h"
 
 @interface AFOAuthSignInViewController()
-@property (nonatomic,strong) id client;
 @property (nonatomic,strong) NSString*	verifyParameter;
 @property (nonatomic,strong) NSString*	accessTokenPath;
 @property (nonatomic,strong) NSString*	accessMethod;
@@ -126,7 +125,16 @@
 		client.accessToken.verifier = verifyValue;
 		[client acquireOAuthAccessTokenWithPath:self.accessTokenPath requestToken:client.accessToken accessMethod:self.accessMethod success:^(AFOAuth1Token *accessToken, id responseObject) {
 			client.accessToken = accessToken;
-			[self.delegate signInViewController:self didGetAccessPermissionWithClient:self.client attributes:responseObject];
+			
+			NSMutableDictionary* dic = [NSMutableDictionary dictionary];
+			
+			NSArray* strings = [[[NSString alloc]initWithData:responseObject encoding:NSUTF8StringEncoding] componentsSeparatedByString:@"&"];
+			for (NSString* string in strings) {
+				NSArray* keyValue = [string componentsSeparatedByString:@"="];
+				[dic setObject:keyValue[1] forKey:keyValue[0]];
+			}
+			
+			[self.delegate signInViewController:self didGetAccessPermissionWithClient:self.client attributes:dic];
 		} failure:^(NSError *error) {
 			NSLog(@"%@",error);
 		}];
@@ -138,7 +146,12 @@
 			NSLog(@"%@",error);
 		}];
 	}
-	
+}
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+	self.view = nil;
+	[super viewDidDisappear:animated];
 }
 
 @end

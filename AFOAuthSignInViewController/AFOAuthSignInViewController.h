@@ -27,6 +27,7 @@ typedef enum {
 
 @interface AFOAuthSignInViewController : UIViewController <UIWebViewDelegate>
 
+@property (nonatomic,strong) id																				client;
 @property (nonatomic,assign) id<AFOAuthSignInViewControllerDelegate>	delegate;
 
 - (id)initWithOAuthClientType:(AFOAuthClientType)clientType
